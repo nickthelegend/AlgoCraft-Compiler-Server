@@ -1,4 +1,4 @@
-FROM node:22-slim
+FROM python:3.12-slim
 
 ENV NODE_ENV=production
 ENV PATH=/usr/local/bin:/root/.local/bin:$PATH
@@ -7,15 +7,21 @@ ENV ALGOD_SERVER=https://testnet-api.4160.nodely.dev
 
 WORKDIR /app
 
-# Install system dependencies
+# Install Node.js 22
 RUN apt-get update && \
-    apt-get install -y curl ca-certificates python3 python3-pip python3-venv && \
-    python3 -m pip install --user --break-system-packages pipx && \
-    python3 -m pipx ensurepath && \
+    apt-get install -y curl ca-certificates gnupg && \
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /usr/share/keyrings/nodesource.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main" > /etc/apt/sources.list.d/nodesource.list && \
+    apt-get update && \
+    apt-get install -y nodejs && \
     rm -rf /var/lib/apt/lists/*
 
-# Install AlgoKit via pipx
-RUN pipx install algokit
+# Install pipx and AlgoKit
+RUN pip install pipx && \
+    pipx install algokit && \
+    pipx ensurepath
+
+
 
 # Download Puya binary and extract it
 RUN mkdir -p /app/puya && \

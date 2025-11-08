@@ -1,0 +1,19 @@
+{
+  "name": "unified-compiler-server",
+  "version": "1.0.0",
+  "description": "Unified server for PuyaPy, PuyaTS, and TealScript compilation",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "uuid": "^9.0.0",
+    "@algorandfoundation/algorand-typescript": "^1.0.0-beta.72"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

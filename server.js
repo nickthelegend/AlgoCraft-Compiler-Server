@@ -382,16 +382,16 @@ app.post('/generate-client', async (req, res) => {
         const jobId = uuidv4();
         tmpRoot = fs.mkdtempSync(path.join('/tmp', `algokit-${jobId}-`));
         const arc32Path = path.join(tmpRoot, 'contract.arc32.json');
-        const clientPath = path.join(tmpRoot, 'client.py');
+        const clientPath = path.join(tmpRoot, 'client.ts');
 
         const arc32Content = typeof arc32Data === 'string' ? arc32Data : JSON.stringify(arc32Data, null, 2);
         fs.writeFileSync(arc32Path, arc32Content, 'utf8');
 
-        const args = ['generate', 'client', arc32Path, '--output', clientPath];
+        const args = ['generate', 'client', arc32Path, '--output', clientPath, '--language', 'typescript'];
         await runCommand('algokit', args, { cwd: tmpRoot });
 
         if (!fs.existsSync(clientPath)) {
-            throw new Error('client.py file was not generated');
+            throw new Error('client.ts file was not generated');
         }
 
         const clientContent = fs.readFileSync(clientPath, 'utf8');
@@ -400,7 +400,7 @@ app.post('/generate-client', async (req, res) => {
         return res.json({ 
             ok: true, 
             files: {
-                'client.py': {
+                'client.ts': {
                     encoding: 'base64',
                     data: Buffer.from(clientContent, 'utf8').toString('base64')
                 }

@@ -89,7 +89,7 @@ app.post('/compile-puyapy', async (req, res) => {
         fs.writeFileSync(contractPath, decodedCode, 'utf8');
         fs.mkdirSync(outDir, { recursive: true });
 
-        const args = ['compile', 'py', contractPath, '--output-arc32', '--output-arc56', '--output-teal'];
+        const args = ['compile', 'py', contractPath, '--output-arc32', '--output-arc56'];
         console.log('Running algokit with args:', args);
         const compileResult = await runCommand('algokit', args, { cwd: tmpRoot });
         console.log('AlgoKit stdout:', compileResult.stdout);

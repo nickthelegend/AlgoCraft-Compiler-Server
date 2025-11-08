@@ -2,6 +2,8 @@ FROM node:22-slim
 
 ENV NODE_ENV=production
 ENV PATH=/usr/local/bin:/root/.local/bin:$PATH
+ENV ALGOD_PORT=443
+ENV ALGOD_SERVER=https://testnet-api.4160.nodely.dev
 
 WORKDIR /app
 
@@ -27,9 +29,9 @@ RUN mkdir -p /app/puya && \
 RUN npm install -g @algorandfoundation/puya-ts @algorandfoundation/tealscript
 
 # Copy package files and install dependencies
-COPY package.json package-lock.json* ./
+COPY package.json ./
 COPY tsconfig.json ./
-RUN npm ci
+RUN npm install
 
 # Install local dependencies
 RUN npm install @algorandfoundation/algorand-typescript

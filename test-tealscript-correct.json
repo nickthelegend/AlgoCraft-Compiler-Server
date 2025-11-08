@@ -1,0 +1,5 @@
+{
+  "filename": "Simple.algo.ts",
+  "code": "aW1wb3J0IHsgQ29udHJhY3QgfSBmcm9tICdAYWxnb3JhbmRmb3VuZGF0aW9uL3RlYWxzY3JpcHQnCgpleHBvcnQgZGVmYXVsdCBjbGFzcyBTaW1wbGUgZXh0ZW5kcyBDb250cmFjdCB7CiAgY291bnRlciA9IEdsb2JhbFN0YXRlS2V5PHVpbnQ2ND4oeyBrZXk6ICdjb3VudGVyJyB9KTsKCiAgaW5jcihpOiB1aW50NjQpOiB2b2lkIHsKICAgIHRoaXMuY291bnRlci52YWx1ZSA9IHRoaXMuY291bnRlci52YWx1ZSArIGk7CiAgfQp9",
+  "encoded": "base64"
+}

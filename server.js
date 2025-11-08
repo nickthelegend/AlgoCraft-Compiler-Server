@@ -70,22 +70,30 @@ app.post('/compile-puyapy', async (req, res) => {
     let tmpRoot;
     try {
         const { code } = req.body;
+        console.log('PuyaPy compile request received');
         
         if (!code) {
             return res.status(400).json({ ok: false, error: 'Base64 code is required' });
         }
 
         const decodedCode = Buffer.from(code, 'base64').toString('utf-8');
+        console.log('Decoded Python code:', decodedCode);
+        
         const jobId = uuidv4();
         tmpRoot = fs.mkdtempSync(path.join('/tmp', `puya-${jobId}-`));
         const contractPath = path.join(tmpRoot, 'temp_contract.py');
         const outDir = path.join(tmpRoot, 'out');
+        console.log('Temp directory:', tmpRoot);
+        console.log('Contract path:', contractPath);
 
         fs.writeFileSync(contractPath, decodedCode, 'utf8');
         fs.mkdirSync(outDir, { recursive: true });
 
         const args = ['compile', 'py', contractPath, '--output-arc32', '--output-arc56', '--output-teal'];
+        console.log('Running algokit with args:', args);
         const compileResult = await runCommand('algokit', args, { cwd: tmpRoot });
+        console.log('AlgoKit stdout:', compileResult.stdout);
+        console.log('AlgoKit stderr:', compileResult.stderr);
 
         const allArtifacts = readAllFilesRecursively(tmpRoot);
         const artifacts = {};
@@ -112,8 +120,12 @@ app.post('/compile-puyapy', async (req, res) => {
             };
         }
 
+        console.log('Compilation successful, returning artifacts:', Object.keys(base64Artifacts));
         return res.json({ ok: true, files: base64Artifacts });
     } catch (err) {
+        console.error('PuyaPy compilation error:', err);
+        console.error('Error details:', err.message);
+        console.error('Error stderr:', err.stderr);
         if (tmpRoot) {
             try {
                 fs.rmSync(tmpRoot, { recursive: true, force: true });
@@ -232,17 +244,21 @@ app.post('/compile-tealscript', async (req, res) => {
   try {
     let filename = 'contract.algo.ts';
     let sourceCode = '';
+    console.log('TealScript compile request received');
+    console.log('Request body:', req.body);
 
     if (req.body && typeof req.body === 'object' && typeof req.body.code === 'string') {
       filename = req.body.filename || filename;
       if (req.body.encoded === 'base64') {
         try {
           sourceCode = Buffer.from(req.body.code, 'base64').toString('utf8');
+          console.log('Decoded TealScript code:', sourceCode);
         } catch (err) {
           return res.status(400).json({ ok: false, error: 'Invalid base64 encoding' });
         }
       } else {
         sourceCode = req.body.code;
+        console.log('TealScript code:', sourceCode);
       }
     } else {
       return res.status(400).json({ ok: false, error: 'Invalid request body. Expected JSON with { filename, code }.' });
@@ -298,7 +314,11 @@ app.post('/compile-tealscript', async (req, res) => {
     }
 
     const args = ['@algorandfoundation/tealscript', 'src/*.algo.ts', 'artifacts'];
-    await runCommand('npx', args, { cwd: tmpRoot, env: process.env });
+    console.log('Running TealScript with args:', args);
+    console.log('Working directory:', tmpRoot);
+    const result = await runCommand('npx', args, { cwd: tmpRoot, env: process.env });
+    console.log('TealScript stdout:', result.stdout);
+    console.log('TealScript stderr:', result.stderr);
 
     const allArtifacts = readAllFilesRecursively(outDir);
     const artifacts = {};
@@ -319,8 +339,12 @@ app.post('/compile-tealscript', async (req, res) => {
     ).join('\n');
     
     res.setHeader('Content-Type', 'text/plain');
+    console.log('TealScript compilation successful, returning response');
     return res.send(response);
   } catch (err) {
+    console.error('TealScript compilation error:', err);
+    console.error('Error details:', err.message);
+    console.error('Error stderr:', err.stderr);
     if (tmpRoot) {
       try {
         fs.rmSync(tmpRoot, { recursive: true, force: true });

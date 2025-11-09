@@ -40,7 +40,7 @@ COPY tsconfig.json ./
 RUN npm install
 
 # Install local dependencies
-RUN npm install @algorandfoundation/algorand-typescript
+RUN npm install @algorandfoundation/algorand-typescript@1.0.0-beta.72
 
 # Copy app source
 COPY server.js ./
